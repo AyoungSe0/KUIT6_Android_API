@@ -70,14 +70,14 @@ fun PostEditScreen(
     ) { uri: Uri? ->
         if (uri != null) {
             selectedImageUri = uri                     // 미리보기용
-            // ★ 선택 즉시 업로드해서 서버에 보낼 URL을 확보
+            // 선택 즉시 업로드해서 서버에 보낼 URL을 확보
             viewModel.uploadImage(
                 context = context,
                 uri = uri,
                 onSuccess = { /* 필요시 스낵바/토스트 */ },
                 onError = { /* 에러 안내 */ }
             )
-            removeImage = false                        // 아래 2)에서 추가할 플래그
+            removeImage = false
         }
     }
 
