@@ -40,6 +40,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -54,17 +55,30 @@ fun PostEditScreen(
     onPostUpdated: () -> Unit,
     viewModel: PostViewModel = viewModel()
 ) {
+    var removeImage by remember { mutableStateOf(false) }
+
     val post = viewModel.postDetail
 
     var title by remember { mutableStateOf("") }
     var content by remember { mutableStateOf("") }
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
     var isLoaded by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
-        selectedImageUri = uri
+        if (uri != null) {
+            selectedImageUri = uri                     // 미리보기용
+            // ★ 선택 즉시 업로드해서 서버에 보낼 URL을 확보
+            viewModel.uploadImage(
+                context = context,
+                uri = uri,
+                onSuccess = { /* 필요시 스낵바/토스트 */ },
+                onError = { /* 에러 안내 */ }
+            )
+            removeImage = false                        // 아래 2)에서 추가할 플래그
+        }
     }
 
     LaunchedEffect(postId) {
@@ -151,7 +165,7 @@ fun PostEditScreen(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                if (selectedImageUri != null || post.imageUrl != null) {
+                if (!removeImage && (selectedImageUri != null || post.imageUrl != null)) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -171,7 +185,11 @@ fun PostEditScreen(
                             contentScale = ContentScale.Crop
                         )
                         IconButton(
-                            onClick = { selectedImageUri = null },
+                            onClick = {
+                                selectedImageUri = null
+                                viewModel.clearUploadedImageUrl()
+                                removeImage = true
+                            },
                             modifier = Modifier
                                 .align(Alignment.TopEnd)
                                 .padding(8.dp)
@@ -202,7 +220,16 @@ fun PostEditScreen(
 
                 Button(
                     onClick = {
-                        viewModel.updatePost(postId, title, content, null) {
+                        val finalImageUrl =
+                            when {
+                                removeImage -> null                                // 삭제
+                                viewModel.uploadedImageUrl != null -> viewModel.uploadedImageUrl  // 교체
+                                else -> viewModel.postDetail?.imageUrl             // 유지
+                            }
+
+                        viewModel.updatePost(postId, title, content, finalImageUrl) {
+                            viewModel.clearUploadedImageUrl()
+                            removeImage = false
                             onPostUpdated()
                         }
                     },

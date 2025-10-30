@@ -86,7 +86,7 @@ class PostViewModel : ViewModel() {
         postId: Long,
         title: String,
         content: String,
-        imageUrl: String? = null,
+        imageUrl: String?,
         onSuccess: () -> Unit = {}
     ) {
         // 수정 후 게시글 상세가 나오게
