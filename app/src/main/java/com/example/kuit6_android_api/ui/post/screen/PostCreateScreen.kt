@@ -187,8 +187,8 @@ fun PostCreateScreen(
 
             Button(
                 onClick = {
-                    val finalAuthor = author.ifBlank { "anonymous" }
-                    viewModel.createPost(finalAuthor, title, content, null) {
+                    val finalAuthor = author//.ifBlank { "anonymous" }
+                    viewModel.createPost(finalAuthor, title, content, null/*viewModel.uploadedImage*/) {
                         onPostCreated()
                     }
                 },
