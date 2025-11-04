@@ -28,6 +28,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,6 +37,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.kuit6_android_api.ui.post.viewmodel.PostViewModel
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -53,6 +56,7 @@ fun PostEditScreen(
     postId: Long,
     onNavigateBack: () -> Unit,
     onPostUpdated: () -> Unit,
+    snackBarState: SnackbarHostState,
     viewModel: PostViewModel = viewModel()
 ) {
     var removeImage by remember { mutableStateOf(false) }
@@ -64,6 +68,7 @@ fun PostEditScreen(
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
     var isLoaded by remember { mutableStateOf(false) }
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
 
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -231,6 +236,7 @@ fun PostEditScreen(
                             viewModel.clearUploadedImageUrl()
                             removeImage = false
                             onPostUpdated()
+                            scope.launch { snackBarState.showSnackbar("게시글이 수정되었습니다.") }
                         }
                     },
                     modifier = Modifier
@@ -262,7 +268,8 @@ fun PostEditScreenPreview() {
         PostEditScreen(
             postId = 1L,
             onNavigateBack = {},
-            onPostUpdated = {}
+            onPostUpdated = {},
+            snackBarState = remember { SnackbarHostState() }
         )
     }
 }
