@@ -20,6 +20,7 @@ import java.io.FileOutputStream
 import java.time.LocalDateTime
 
 class PostViewModel : ViewModel() {
+    // TODO: 뷰모델 다 분리, UiState 만들기
     var posts by mutableStateOf<List<PostResponse>>(emptyList())
         private set
 
@@ -57,6 +58,8 @@ class PostViewModel : ViewModel() {
                         postDetail = response.data
                     }
                 }
+            }.onFailure { error ->
+                postDetail = null
             }
         }
     }
