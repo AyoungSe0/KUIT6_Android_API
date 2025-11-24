@@ -12,6 +12,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,6 +33,21 @@ fun LoginScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
+
+    var buttonText by remember { mutableStateOf("토큰 검증") }
+    // 토큰 검증 (시도 전)
+    // 토큰 검증 성공 (성공시)
+    // 토큰 검증 실패 (실패시)
+
+    LaunchedEffect(Unit) {
+        viewModel.checkAutoLoginAndValidate(context) { isValid ->
+            buttonText = if (isValid) {
+                "토큰 검증 성공"
+            } else {
+                "토큰 검증 실패"
+            }
+        }
+    }
 
     Scaffold(
         Modifier.fillMaxSize()
@@ -69,7 +85,7 @@ fun LoginScreen(
                 Checkbox(
                     checked = uiState.isAutoLogin,
                     onCheckedChange = {
-                        viewModel.onAutoLoginChanged(it)
+                        viewModel.onAutoLoginChanged(context, it)
                     }
                 )
                 Text("자동 로그인")
@@ -93,14 +109,16 @@ fun LoginScreen(
                 viewModel.getToken(context = context)
             }) { Text("토큰 조회") }
 
-            var buttonText by remember { mutableStateOf("토큰 검증") }
-            // 토큰 검증 (시도 전)
-            // 토큰 검증 성공 (성공시)
-            // 토큰 검증 실패 (실패시)
 
             Button(onClick = {
                 // 토큰 검증 api 연동
-
+                buttonText = "토큰 검증"
+                viewModel.validateToken { isValid ->
+                    buttonText = if (isValid)
+                        "토큰 검증 성공"
+                    else
+                        "토큰 검증 실패"
+                }
             }) {
                 Text(buttonText)
             }

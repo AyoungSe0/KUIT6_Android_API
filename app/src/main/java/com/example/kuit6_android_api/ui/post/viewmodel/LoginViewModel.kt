@@ -27,8 +27,11 @@ class LoginViewModel(
         _uiState.update { it.copy(password = password) }
     }
 
-    fun onAutoLoginChanged(isAutoLogin: Boolean) {
+    fun onAutoLoginChanged(context: Context, isAutoLogin: Boolean) {
         _uiState.update { it.copy(isAutoLogin = isAutoLogin) }
+        viewModelScope.launch {
+            tokenRepository.saveAutoLogin(context, isAutoLogin)
+        }
     }
 
     fun signup(context: Context) {
@@ -60,8 +63,35 @@ class LoginViewModel(
         }
     }
 
-    init {
-        // 검증 로직 수행
-        // 자동 로그인 체크 되어 있다면 뷰모델 생성될 때 검증 로직을 호출한다.
+    fun validateToken(onResult: (Boolean) -> Unit){
+        viewModelScope.launch {
+            loginRepository.validate()
+                .onSuccess { isValid ->
+                    onResult(isValid)
+                }
+                .onFailure {
+                    onResult(false)
+                }
+        }
+    }
+
+    fun checkAutoLoginAndValidate(
+        context: Context,
+        onResult: (Boolean) -> Unit
+    ) {
+        viewModelScope.launch {
+            val isAuto = tokenRepository.getAutoLogin(context)
+            _uiState.update { it.copy(isAutoLogin = isAuto) }
+
+            if (isAuto){
+                loginRepository.validate()
+                    .onSuccess { isValid ->
+                        onResult(isValid)
+                    }
+                    .onFailure {
+                        onResult(false)
+                    }
+            }
+        }
     }
 }

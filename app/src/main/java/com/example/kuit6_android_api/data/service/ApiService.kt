@@ -66,4 +66,6 @@ interface ApiService {
         @Body request: LoginRequest
     ): BaseResponse<LoginResponse>
 
+    @GET("/api/auth/validate")
+    suspend fun validateToken(): BaseResponse<Boolean>
 }

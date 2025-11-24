@@ -43,4 +43,15 @@ class LoginRepositoryImpl(
             Log.e("LoginRepository", error.message.toString())
         }
     }
+
+    override suspend fun validate(): Result<Boolean> {
+        return runCatching {
+            val response = apiService.validateToken()
+
+            if (response.success && response.data != null)
+                response.data
+            else
+                throw Exception(response.message ?: "토큰 검증 실패")
+        }
+    }
 }
