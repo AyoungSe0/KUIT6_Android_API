@@ -6,15 +6,18 @@ import androidx.lifecycle.viewModelScope
 import com.example.kuit6_android_api.data.repository.LoginRepository
 import com.example.kuit6_android_api.data.repository.TokenRepository
 import com.example.kuit6_android_api.ui.post.state.LoginUiState
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class LoginViewModel(
+@HiltViewModel
+class LoginViewModel @Inject constructor(
     private val loginRepository: LoginRepository,
-    private val tokenRepository: TokenRepository,
+    private val tokenRepository: TokenRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
@@ -30,7 +33,7 @@ class LoginViewModel(
     fun onAutoLoginChanged(context: Context, isAutoLogin: Boolean) {
         _uiState.update { it.copy(isAutoLogin = isAutoLogin) }
         viewModelScope.launch {
-            tokenRepository.saveAutoLogin(context, isAutoLogin)
+            tokenRepository.saveAutoLogin(isAutoLogin)
         }
     }
 
@@ -40,7 +43,7 @@ class LoginViewModel(
                 id = uiState.value.id,
                 password = uiState.value.password
             ).onSuccess {
-                tokenRepository.saveToken(context, it.token)
+                tokenRepository.saveToken(it.token)
             }
         }
     }
@@ -51,14 +54,14 @@ class LoginViewModel(
                 id = uiState.value.id,
                 password = uiState.value.password
             ).onSuccess {
-                tokenRepository.saveToken(context, it.token)
+                tokenRepository.saveToken(it.token)
             }
         }
     }
 
     fun getToken(context: Context) {
         viewModelScope.launch {
-            val token = tokenRepository.getToken(context)
+            val token = tokenRepository.getToken()
             _uiState.update { it.copy(token = token ?: "") }
         }
     }
@@ -80,7 +83,7 @@ class LoginViewModel(
         onResult: (Boolean) -> Unit
     ) {
         viewModelScope.launch {
-            val isAuto = tokenRepository.getAutoLogin(context)
+            val isAuto = tokenRepository.getAutoLogin()
             _uiState.update { it.copy(isAutoLogin = isAuto) }
 
             if (isAuto){

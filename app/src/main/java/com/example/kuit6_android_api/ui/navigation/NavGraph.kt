@@ -2,7 +2,7 @@ package com.example.kuit6_android_api.ui.navigation
 
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -12,13 +12,6 @@ import com.example.kuit6_android_api.ui.post.screen.PostCreateScreen
 import com.example.kuit6_android_api.ui.post.screen.PostDetailScreen
 import com.example.kuit6_android_api.ui.post.screen.PostEditScreen
 import com.example.kuit6_android_api.ui.post.screen.PostListScreen
-import com.example.kuit6_android_api.ui.post.viewmodel.LoginViewModel
-import com.example.kuit6_android_api.ui.post.viewmodel.PostCreateViewModel
-import com.example.kuit6_android_api.ui.post.viewmodel.PostDetailViewModel
-import com.example.kuit6_android_api.ui.post.viewmodel.PostEditViewModel
-import com.example.kuit6_android_api.ui.post.viewmodel.PostListViewModel
-import com.example.kuit6_android_api.ui.post.viewmodel.loginViewModelFactory
-import com.example.kuit6_android_api.ui.post.viewmodel.postViewModelFactory
 
 @Composable
 fun NavGraph(
@@ -44,9 +37,7 @@ fun NavGraph(
                 onLoginClick = {
                     navController.navigate(LoginRoute)
                 },
-                viewModel = viewModel(factory = postViewModelFactory {
-                    PostListViewModel(it)
-                })
+                viewModel = hiltViewModel()
             )
         }
 
@@ -62,12 +53,7 @@ fun NavGraph(
                     navController.navigate(PostEditRoute(postId))
                 },
                 snackBarState = snackBarState,
-                viewModel = viewModel(factory = postViewModelFactory {
-                    PostDetailViewModel(
-                        it,
-                        route.postId
-                    )
-                })
+                viewModel = hiltViewModel()
             )
         }
 
@@ -80,9 +66,7 @@ fun NavGraph(
                     navController.popBackStack()
                 },
                 snackBarState = snackBarState,
-                viewModel = viewModel(factory = postViewModelFactory {
-                    PostCreateViewModel(it)
-                })
+                viewModel = hiltViewModel()
             )
         }
 
@@ -98,12 +82,7 @@ fun NavGraph(
                     navController.popBackStack()
                 },
                 snackBarState = snackBarState,
-                viewModel = viewModel(factory = postViewModelFactory {
-                    PostEditViewModel(
-                        it,
-                        route.postId
-                    )
-                })
+                viewModel = hiltViewModel()
             )
         }
 
@@ -114,12 +93,7 @@ fun NavGraph(
                 onNavigateBack = {
                     navController.popBackStack()
                 },
-                viewModel = viewModel(factory = loginViewModelFactory { loginRepo, tokenRepo ->
-                    LoginViewModel(
-                        loginRepository = loginRepo,
-                        tokenRepository = tokenRepo
-                    )
-                })
+                viewModel = hiltViewModel()
             )
         }
     }

@@ -1,18 +1,25 @@
 package com.example.kuit6_android_api.ui.post.viewmodel
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.kuit6_android_api.data.repository.PostRepository
 import com.example.kuit6_android_api.ui.post.state.PostDetailUiState
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class PostDetailViewModel(
+@HiltViewModel
+class PostDetailViewModel @Inject constructor(
     private val postRepository: PostRepository,
-    private val postId: Long
+    savedStateHandle: SavedStateHandle
+//    private val postId: Long
 ) : ViewModel() {
+    private val postId: Long =
+        checkNotNull(savedStateHandle.get<Long>("postId"))
     private val _uiState = MutableStateFlow<PostDetailUiState>(PostDetailUiState.Loading)
     val uiState: StateFlow<PostDetailUiState> = _uiState.asStateFlow()
 

@@ -43,14 +43,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.kuit6_android_api.ui.post.state.PostDetailUiState
 import com.example.kuit6_android_api.ui.post.viewmodel.PostDetailViewModel
-import com.example.kuit6_android_api.ui.post.viewmodel.PostListViewModel
-import com.example.kuit6_android_api.ui.post.viewmodel.postViewModelFactory
 import com.example.kuit6_android_api.util.formatDateTime
 import kotlinx.coroutines.launch
 
@@ -61,7 +58,7 @@ fun PostDetailScreen(
     onNavigateBack: () -> Unit,
     onEditClick: (Long) -> Unit = {},
     snackBarState: SnackbarHostState,
-    viewModel: PostDetailViewModel
+    viewModel: PostDetailViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
 //    val post = viewModel.postDetail
@@ -237,20 +234,5 @@ fun PostDetailScreen(
                 }
             )
         }
-    }
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun PostDetailScreenPreview() {
-    MaterialTheme {
-        PostDetailScreen(
-            postId = 1L,
-            onNavigateBack = {},
-            onEditClick = {},
-            snackBarState = remember { SnackbarHostState() },
-            viewModel = viewModel(factory = postViewModelFactory { PostListViewModel(it) })
-        )
     }
 }

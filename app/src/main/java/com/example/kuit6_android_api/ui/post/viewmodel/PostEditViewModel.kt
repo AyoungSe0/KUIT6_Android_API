@@ -3,11 +3,13 @@ package com.example.kuit6_android_api.ui.post.viewmodel
 import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.kuit6_android_api.data.model.request.PostCreateRequest
 import com.example.kuit6_android_api.data.repository.PostRepository
 import com.example.kuit6_android_api.ui.post.state.PostEditUiState
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,11 +19,16 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 import java.io.FileOutputStream
+import javax.inject.Inject
 
-class PostEditViewModel(
+@HiltViewModel
+class PostEditViewModel @Inject constructor(
     private val postRepository: PostRepository,
-    private val postId: Long
+    savedStateHandle: SavedStateHandle
+//    private val postId: Long
 ) : ViewModel() {
+    private val postId: Long =
+        checkNotNull(savedStateHandle.get<Long>("postId"))
     private val _uiState = MutableStateFlow<PostEditUiState>(PostEditUiState.Loading)
     val uiState: StateFlow<PostEditUiState> = _uiState.asStateFlow()
 

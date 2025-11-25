@@ -51,6 +51,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.kuit6_android_api.ui.post.state.PostCreateUiState
 import com.example.kuit6_android_api.ui.post.viewmodel.PostCreateViewModel
@@ -62,7 +63,7 @@ fun PostCreateScreen(
     onNavigateBack: () -> Unit,
     onPostCreated: () -> Unit,
     snackBarState: SnackbarHostState,
-    viewModel: PostCreateViewModel
+    viewModel: PostCreateViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val uploadedImageUrl by viewModel.uploadedImageUrl.collectAsState()

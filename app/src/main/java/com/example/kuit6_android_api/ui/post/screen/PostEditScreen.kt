@@ -46,6 +46,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.kuit6_android_api.data.model.response.PostResponse
 import com.example.kuit6_android_api.ui.post.state.PostEditUiState
@@ -59,7 +60,7 @@ fun PostEditScreen(
     onNavigateBack: () -> Unit,
     onPostUpdated: () -> Unit,
     snackBarState: SnackbarHostState,
-    viewModel: PostEditViewModel
+    viewModel: PostEditViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val uploadedImageUrl by viewModel.uploadedImageUrl.collectAsState()
